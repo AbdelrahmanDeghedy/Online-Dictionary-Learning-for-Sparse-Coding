@@ -50,13 +50,15 @@ class OnlineDictionaryLearning:
 
     # Algorithm 1 Online dictionary learning
     def learn(self, iterations, regularizationParameter, dict_size):
+        logPatchSize = 40
+
         sampledData = self.sample(self.data)
 
         a_prev = 0.01 * np.identity(dict_size)
         b_prev = 0
         d_prev = self.initialize_dictionary(dict_size, sampledData)
 
-        for _ in tqdm(range(iterations)):
+        for currIteration in tqdm(range(iterations)):
             x = next(sampledData)
 
             alpha = self.compute_alpha(x, d_prev, regularizationParameter)
@@ -72,7 +74,8 @@ class OnlineDictionaryLearning:
 
             self.computeObjectiveFunction()
 
-            self.log(observation=x, dictionary=currDictionary, alpha=alpha)
+            if currIteration % logPatchSize == 0:
+                self.log(observation=x, dictionary=currDictionary, alpha=alpha)
 
         return currDictionary.T
 
