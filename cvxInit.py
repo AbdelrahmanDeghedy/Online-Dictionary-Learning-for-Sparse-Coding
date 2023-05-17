@@ -5,25 +5,35 @@ import math
 # Provides a progress bar
 from tqdm import tqdm
 
-lambda_value = 0.1
-num_iterations = 10000
-
-# Defining the dimensions
-m = 2; n = 4; k = 2
-
-X = np.array([
-                [1, 3, 5, 2],
-                [2, 4, 1, 3]
-            ]) 
-
-# Adding a seed
+# Defining the seed
 np.random.seed(0)
 
-# D = np.random.randn(m, k)
-D = np.array([
-                [1 / math.sqrt(5), 5 / math.sqrt(26)],
-                [2 / math.sqrt(5), 1 / math.sqrt(26)]
-            ])
+# Defining the parameters
+lambda_value = 0.1
+num_iterations = 100
+
+# Defining the dimensions
+m = 20
+n = 100
+k = 20
+
+# Defining the data set
+# Dimensions: m x n
+# X = np.array([
+#                 [1, 3, 5, 2],
+#                 [2, 4, 1, 3]
+#             ]) 
+
+
+X = np.random.randn(m, n)
+# Dimensions: m x k
+D = np.random.randn(m, k)
+D /= np.linalg.norm(D, axis=0)
+
+# D = np.array([
+#                 [1 / math.sqrt(5), 5 / math.sqrt(26)],
+#                 [2 / math.sqrt(5), 1 / math.sqrt(26)]
+#             ])
 
 A = np.random.randn(k, k)
 B = np.random.randn(m, k)
@@ -42,14 +52,22 @@ objective_values = []
 times = [i for i in range(1, num_iterations + 1)]
 
 for i in tqdm(range(num_iterations)):
-    # Define the variables
+    # Define the optimization variables
+    # Dimensions: k x n
     currAlpha = cp.Variable((k, n))
 
     # Define the objective function
     objective = cp.Minimize(cp.sum_squares(X - np.matmul(D, currAlpha)) + lambda_value * cp.norm(currAlpha, 1))
 
+    constraints = []
+    # Columns of D are normalized
+    for j in range(k):
+        constraints += [
+            cp.norm(D[:, j]) <= 1,
+        ]
+
     # Define the problem
-    problem = cp.Problem(objective)
+    problem = cp.Problem(objective, constraints)
 
     # Solve the problem
     problem.solve()
@@ -66,7 +84,7 @@ for i in tqdm(range(num_iterations)):
     update_dictionary(A, B, D, k)
 
     x_hat = np.matmul(D, optimized_alpha)
-    # print("Reconstructed:\n", x_hat)
+    # print("Reconstructed:\n", D)
 
 
 #  Plot the objective function with time
