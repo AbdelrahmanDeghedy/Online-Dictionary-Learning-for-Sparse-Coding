@@ -1,9 +1,14 @@
 import cvxpy as cp
 import numpy as np
-
+import matplotlib.pyplot as plt
+import math
+# Provides a progress bar
+from tqdm import tqdm
 
 lambda_value = 0.1
-num_iterations = 10
+num_iterations = 10000
+
+# Defining the dimensions
 m = 2; n = 4; k = 2
 
 X = np.array([
@@ -14,11 +19,11 @@ X = np.array([
 # Adding a seed
 np.random.seed(0)
 
-D = np.random.randn(m, k)
-# D = np.array([
-#                 [1 / math.sqrt(5), 5 / math.sqrt(26)],
-#                 [2 / math.sqrt(5), 1 / math.sqrt(26)]
-#             ])
+# D = np.random.randn(m, k)
+D = np.array([
+                [1 / math.sqrt(5), 5 / math.sqrt(26)],
+                [2 / math.sqrt(5), 1 / math.sqrt(26)]
+            ])
 
 A = np.random.randn(k, k)
 B = np.random.randn(m, k)
@@ -33,7 +38,10 @@ def update_dictionary(a, b, dictionary, dict_cols):
     return dictionary
 
 
-for i in range(num_iterations):
+objective_values = []
+times = [i for i in range(1, num_iterations + 1)]
+
+for i in tqdm(range(num_iterations)):
     # Define the variables
     currAlpha = cp.Variable((k, n))
 
@@ -49,16 +57,20 @@ for i in range(num_iterations):
     # Retrieve the optimized alpha
     optimized_alpha = currAlpha.value
 
+    # get the optimal objective value
+    objective_values.append(problem.value)
+
     A += (1/2) * np.matmul(optimized_alpha, optimized_alpha.T)
     B += (1/2) * np.matmul(X, optimized_alpha.T)
 
     update_dictionary(A, B, D, k)
 
     x_hat = np.matmul(D, optimized_alpha)
-    print("Reconstructed:\n", x_hat)
-
-    # print(D)
-    # print("Optimized alpha:", optimized_alpha)
+    # print("Reconstructed:\n", x_hat)
 
 
-# 1. Plot the objective function with time
+#  Plot the objective function with time
+plt.plot(times[1:], objective_values[1:])
+plt.xlabel('Time')
+plt.ylabel('Objective function')
+plt.show()
