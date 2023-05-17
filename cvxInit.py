@@ -1,14 +1,5 @@
-
-import math
 import cvxpy as cp
 import numpy as np
-
-# Define the initial values
-# Dt = np.array([1 / math.sqrt(5), 2 / math.sqrt(5)])
-# Xt = np.array([1, 3, 5, 2])
-# print("Dt:", Dt.shape)
-# print("Xt:", Xt.shape)
-
 
 
 lambda_value = 0.1
@@ -20,40 +11,54 @@ X = np.array([
                 [2, 4, 1, 3]
             ]) 
 
-D = np.array([
-                [1 / math.sqrt(5), 5 / math.sqrt(26)],
-                [2 / math.sqrt(5), 1 / math.sqrt(26)]
-            ])
+# Adding a seed
+np.random.seed(0)
+
+D = np.random.randn(m, k)
+# D = np.array([
+#                 [1 / math.sqrt(5), 5 / math.sqrt(26)],
+#                 [2 / math.sqrt(5), 1 / math.sqrt(26)]
+#             ])
 
 A = np.random.randn(k, k)
 B = np.random.randn(m, k)
 
-# Define the variables
-alpha = cp.Variable(k)
+
+def update_dictionary(a, b, dictionary, dict_cols):
+    # For each column of the dictionary
+    for j in range(dict_cols) :
+        u_j = dictionary[:, j] + (b[:, j] - np.matmul(dictionary, a[:, j])) / a[j, j]
+        dictionary[:, j] = u_j / max([1, np.linalg.norm(u_j)])
+
+    return dictionary
 
 
 for i in range(num_iterations):
-    for j in range(k):
-        # Access the j-th column of X, D
-        Xt = X[:, j]
-        Dt = D[:, j]
+    # Define the variables
+    currAlpha = cp.Variable((k, n))
 
-        # Define the objective function
-        objective = cp.Minimize(cp.sum_squares(Xt - Dt @ alpha) + lambda_value * cp.norm(alpha, 1))
+    # Define the objective function
+    objective = cp.Minimize(cp.sum_squares(X - np.matmul(D, currAlpha)) + lambda_value * cp.norm(currAlpha, 1))
 
-        # Define the problem
-        problem = cp.Problem(objective)
+    # Define the problem
+    problem = cp.Problem(objective)
 
-        # Solve the problem
-        problem.solve()
+    # Solve the problem
+    problem.solve()
 
-        # Retrieve the optimized alpha
-        optimized_alpha = alpha.value
+    # Retrieve the optimized alpha
+    optimized_alpha = currAlpha.value
 
-        print(A[:, j].shape)
+    A += (1/2) * np.matmul(optimized_alpha, optimized_alpha.T)
+    B += (1/2) * np.matmul(X, optimized_alpha.T)
 
-        A[:, j] += (1/2) * np.outer(optimized_alpha, optimized_alpha.T)
-        B[:, j] += (1/2) * np.outer(Xt, optimized_alpha.T)
+    update_dictionary(A, B, D, k)
 
-        print("A:\n", A)
-        # print("Optimized alpha:", optimized_alpha)
+    x_hat = np.matmul(D, optimized_alpha)
+    print("Reconstructed:\n", x_hat)
+
+    # print(D)
+    # print("Optimized alpha:", optimized_alpha)
+
+
+# 1. Plot the objective function with time
