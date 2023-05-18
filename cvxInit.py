@@ -9,8 +9,6 @@ def plotDifferenceMatrix(matrix1, matrix2, fileSaveName = "absolute_difference_m
     # Compute the absolute difference matrix
     diff_matrix = np.abs(matrix2 - matrix1)
 
-
-
     plt.figure(figsize=(10, 10))
 
     # Plot the absolute difference matrix as a heatmap
@@ -18,19 +16,13 @@ def plotDifferenceMatrix(matrix1, matrix2, fileSaveName = "absolute_difference_m
     # othervalues for cmap are 'hot', 'jet', 'gray', 'viridis', 'magma', 'inferno', 'plasma'
     plt.imshow(diff_matrix, cmap='hot', vmin=0, vmax=1)
 
-
-
-
     # plt.imshow(diff_matrix, cmap='hot')
-    plt.title('Absolute Difference Matrix')
+    plt.title(fileSaveName)
     plt.colorbar(label='Absolute Difference')
 
     # Hide axis ticks and labels
     plt.xticks([])
     plt.yticks([])
-
-    # Display the plot
-    # plt.show()
 
     # Save the plot as a PNG image
     plt.savefig(f'{fileSaveName}.png', bbox_inches='tight')
@@ -46,7 +38,7 @@ num_iterations = 5
 # Defining the dimensions
 m = 3
 n = 10
-k = 2
+k = 4
 
 # Defining the data set
 # Dimensions: m x n
@@ -126,7 +118,7 @@ for i in tqdm(range(num_iterations)):
     D = update_dictionary(A, B, D, k)
 
     x_hat = np.around(np.matmul(D, optimized_alpha), decimals=1)
-    plotDifferenceMatrix(X, x_hat, f"absolute_difference_matrix_{i + 1}")
+    plotDifferenceMatrix(X, x_hat, f"absolute_difference_matrix_{i + 1}, with K = {k}")
     print(x_hat)
     # print(D)
 
@@ -138,5 +130,4 @@ plt.figure()
 plt.plot(times[1:], objective_values[1:])
 plt.xlabel('Time')
 plt.ylabel('Objective function')
-# Only show the new figure
 plt.show()
