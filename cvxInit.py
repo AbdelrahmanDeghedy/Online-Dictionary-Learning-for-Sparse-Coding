@@ -25,7 +25,7 @@ def plotDifferenceMatrix(matrix1, matrix2, fileSaveName = "absolute_difference_m
     plt.yticks([])
 
     # Save the plot as a PNG image
-    plt.savefig(f'{fileSaveName}.png', bbox_inches='tight')
+    plt.savefig(f'./results/{fileSaveName}.png', bbox_inches='tight')
 
 
 # Defining the seed
