@@ -36,18 +36,18 @@ lambda_value = 0.1
 num_iterations = 100
 
 # Defining the dimensions
-m = 3
-n = 10
-k = 6
+m = 10
+n = 100
+k = 50
 
 # Defining the data set
 # Dimensions: m x n
-X = np.array([
-                [1, 3, 5, 2, 5, 7, 8, 9, 1, 2],
-                [2, 4, 1, 3, 2, 1, 6, 12, 3, 4],
-                [2, 4, 1, 3, 2, 0, -2, 8, 7, 9]
-            ]) 
-# X = np.random.randn(m, n)
+# X = np.array([
+#                 [1, 3, 5, 2, 5, 7, 8, 9, 1, 2],
+#                 [2, 4, 1, 3, 2, 1, 6, 12, 3, 4],
+#                 [2, 4, 1, 3, 2, 0, -2, 8, 7, 9]
+#             ]) 
+X = np.random.randn(m, n)
 
 # Dimensions: m x k
 # D = np.random.randn(m, k)
@@ -75,7 +75,8 @@ def update_dictionary(a, b, dictionary, dict_cols):
 
     return dictionary
 
-
+# algorithm to draw i.i.d samples of p from a matrix
+# Sample multiple columns from the matrix
 def sample(matrix):
     num_cols = matrix.shape[1]
     while True :
@@ -83,16 +84,20 @@ def sample(matrix):
         for idx in permutation:
             yield matrix[:, idx].reshape(-1, 1)
 
-# algorithm to draw i.i.d samples of p from a matrix
-# def sample_random_column_from_matrix(matrix):
-#     # get the number of columns in the matrix
+
+def sample_columns(matrix, num_samples = 6):
+    num_columns = matrix.shape[1]
+    sample_indices = np.random.choice(num_columns, num_samples, replace=False)
+    sampled_matrix = matrix[:, sample_indices]
+    return sampled_matrix
+
+
+# def sample(matrix):
 #     num_cols = matrix.shape[1]
-
-#     # get a random column index
-#     random_col_index = np.random.randint(0, num_cols)
-
-#     # return the random column
-#     return matrix[:, random_col_index].reshape(-1, 1)
+#     while True :
+#         permutation = list(np.random.permutation(num_cols))
+#         for idx in permutation:
+#             yield matrix[:, idx].reshape(-1, 1)
 
 objective_values = []
 times = [i for i in range(1, num_iterations + 1)]
@@ -100,7 +105,7 @@ times = [i for i in range(1, num_iterations + 1)]
 print()
 print()
 
-X = sample(X)
+# X = sample(X)
 
 for i in tqdm(range(num_iterations)):
     # print()
@@ -108,10 +113,11 @@ for i in tqdm(range(num_iterations)):
 
     # Draw x t from p(x).
     # X_t = sample_random_column_from_matrix(X)
-    X_t = next(X)
+    samples = 10
+    X_t = sample_columns(X, samples)
 
     # Define the optimization variables
-    currAlpha = cp.Variable((k, 1))
+    currAlpha = cp.Variable((k, samples))
 
     # Define the objective function
     objective = cp.Minimize((1 / 2) * cp.sum_squares(X_t - np.matmul(D, currAlpha)) + lambda_value * cp.norm(currAlpha, 1))
@@ -139,14 +145,9 @@ for i in tqdm(range(num_iterations)):
     D = update_dictionary(A, B, D, k)
 
     # get the optimal objective value
-    currObjective = 0
-    for i in range (1, i + 1):
-        
-        currObjective += (1 / 2) * np.linalg.norm(X_t - np.matmul(D, optimized_alpha), ord=2)**2 + lambda_value * np.linalg.norm(optimized_alpha, 1)
-    currObjective *= (1 / (i + 1))
-
-    # objective_values.append(optimalValue / i + 1)
-    objective_values.append(currObjective)
+  
+    
+    objective_values.append(objective.value / (i + 1))
 
     x_hat = np.around(np.matmul(D, optimized_alpha), decimals=1)
     # plotDifferenceMatrix(X, x_hat, f"Matrix_Reconstruction_Difference_(Iteration{i + 1}, with K = {k})")
@@ -159,7 +160,7 @@ plt.close("all")
 # Create new figure
 plt.figure()
 #  Plot the objective function with time
-plt.plot(times, objective_values)
+plt.plot(times[1:], objective_values[1:])
 plt.xlabel('Time')
 plt.ylabel('Objective function')
 plt.show()
