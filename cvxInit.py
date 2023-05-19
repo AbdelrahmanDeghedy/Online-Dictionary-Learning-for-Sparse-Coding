@@ -33,12 +33,12 @@ np.random.seed(0)
 
 # Defining the parameters
 lambda_value = 0.1
-num_iterations = 5
+num_iterations = 100
 
 # Defining the dimensions
 m = 3
 n = 10
-k = 4
+k = 6
 
 # Defining the data set
 # Dimensions: m x n
@@ -47,9 +47,7 @@ X = np.array([
                 [2, 4, 1, 3, 2, 1, 6, 12, 3, 4],
                 [2, 4, 1, 3, 2, 0, -2, 8, 7, 9]
             ]) 
-
-
-print(X)
+# X = np.random.randn(m, n)
 
 # Dimensions: m x k
 # D = np.random.randn(m, k)
@@ -63,8 +61,10 @@ D = np.eye(m, k)
 #                 [2 / math.sqrt(5), 1 / math.sqrt(26)]
 #             ])
 
-A = np.random.randn(k, k)
-B = np.random.randn(m, k)
+A = np.eye(k, k)
+# Zero matrix of size k x k
+B = np.zeros((m, k))
+# B = np.random.randn(m, k)
 
 
 def update_dictionary(a, b, dictionary, dict_cols):
@@ -76,22 +76,45 @@ def update_dictionary(a, b, dictionary, dict_cols):
     return dictionary
 
 
+def sample(matrix):
+    num_cols = matrix.shape[1]
+    while True :
+        permutation = list(np.random.permutation(num_cols))
+        for idx in permutation:
+            yield matrix[:, idx].reshape(-1, 1)
+
+# algorithm to draw i.i.d samples of p from a matrix
+# def sample_random_column_from_matrix(matrix):
+#     # get the number of columns in the matrix
+#     num_cols = matrix.shape[1]
+
+#     # get a random column index
+#     random_col_index = np.random.randint(0, num_cols)
+
+#     # return the random column
+#     return matrix[:, random_col_index].reshape(-1, 1)
+
 objective_values = []
 times = [i for i in range(1, num_iterations + 1)]
 
 print()
 print()
 
+X = sample(X)
+
 for i in tqdm(range(num_iterations)):
-    print()
-    print("Iteration: ", i + 1)
+    # print()
+    # print("Iteration: ", i + 1)
+
+    # Draw x t from p(x).
+    # X_t = sample_random_column_from_matrix(X)
+    X_t = next(X)
 
     # Define the optimization variables
-    # Dimensions: k x n
-    currAlpha = cp.Variable((k, n))
+    currAlpha = cp.Variable((k, 1))
 
     # Define the objective function
-    objective = cp.Minimize(cp.sum_squares(X - np.matmul(D, currAlpha)) + lambda_value * cp.norm(currAlpha, 1))
+    objective = cp.Minimize((1 / 2) * cp.sum_squares(X_t - np.matmul(D, currAlpha)) + lambda_value * cp.norm(currAlpha, 1))
 
     constraints = []
     # Columns of D are normalized
@@ -104,30 +127,39 @@ for i in tqdm(range(num_iterations)):
     problem = cp.Problem(objective, constraints)
 
     # Solve the problem
-    problem.solve()
+    optimalValue = problem.solve()
 
     # Retrieve the optimized alpha
     optimized_alpha = currAlpha.value
 
-    # get the optimal objective value
-    objective_values.append(problem.value)
 
     A += (1/2) * np.matmul(optimized_alpha, optimized_alpha.T)
-    B += (1/2) * np.matmul(X, optimized_alpha.T)
+    B += np.matmul(X_t, optimized_alpha.T)
 
     D = update_dictionary(A, B, D, k)
 
+    # get the optimal objective value
+    currObjective = 0
+    for i in range (1, i + 1):
+        
+        currObjective += (1 / 2) * np.linalg.norm(X_t - np.matmul(D, optimized_alpha), ord=2)**2 + lambda_value * np.linalg.norm(optimized_alpha, 1)
+    currObjective *= (1 / (i + 1))
+
+    # objective_values.append(optimalValue / i + 1)
+    objective_values.append(currObjective)
+
     x_hat = np.around(np.matmul(D, optimized_alpha), decimals=1)
-    plotDifferenceMatrix(X, x_hat, f"absolute_difference_matrix_{i + 1}, with K = {k}")
-    print(x_hat)
+    # plotDifferenceMatrix(X, x_hat, f"Matrix_Reconstruction_Difference_(Iteration{i + 1}, with K = {k})")
+    # print(x_hat)
     # print(D)
 
+print(objective_values[-1])
 
 plt.close("all")
 # Create new figure
 plt.figure()
 #  Plot the objective function with time
-plt.plot(times[1:], objective_values[1:])
+plt.plot(times, objective_values)
 plt.xlabel('Time')
 plt.ylabel('Objective function')
 plt.show()
