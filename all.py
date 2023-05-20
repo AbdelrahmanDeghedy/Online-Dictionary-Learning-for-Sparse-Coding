@@ -40,20 +40,8 @@ m = 10
 n = 100
 k = 50
 
-# Defining the data set
 # Dimensions: m x n
 X = np.random.randn(m, n)
-
-# Dimensions: m x k
-# D = np.random.randn(m, k)
-# D /= np.linalg.norm(D, axis=0)
-
-# create an identity matrix
-D = np.eye(m, k)
-A = np.eye(k, k)
-# Zero matrix of size k x k
-B = np.zeros((m, k))
-# B = np.random.randn(m, k)
 
 
 def update_dictionary(a, b, dictionary, dict_cols):
@@ -65,26 +53,12 @@ def update_dictionary(a, b, dictionary, dict_cols):
     return dictionary
 
 # algorithm to draw i.i.d samples of p from a matrix
-# Sample multiple columns from the matrix
-def sample(matrix):
-    num_cols = matrix.shape[1]
-    while True :
-        permutation = list(np.random.permutation(num_cols))
-        for idx in permutation:
-            yield matrix[:, idx].reshape(-1, 1)
-
-
 def sample_columns(matrix, num_samples = 6):
     num_columns = matrix.shape[1]
     sample_indices = np.random.choice(num_columns, num_samples, replace=False)
     sampled_matrix = matrix[:, sample_indices]
-    return sampled_matrix
+    return sampled_matrix, sample_indices
 
-
-print()
-print()
-
-# X = sample(X)
 
 def func(samples, num_iterations):
     # Defining the data set
@@ -96,20 +70,20 @@ def func(samples, num_iterations):
     # D /= np.linalg.norm(D, axis=0)
 
     # create an identity matrix
-    D = np.eye(m, k)
+    D = X[:, 0 : k]
+    D /= np.linalg.norm(D, axis=0)
+
     A = np.eye(k, k)
     # Zero matrix of size k x k
     B = np.zeros((m, k))
     # B = np.random.randn(m, k)
     objective_values = []
+    totalAlpha = np.zeros((k, n))
+
 
     for i in tqdm(range(num_iterations)):
-        # print()
-        # print("Iteration: ", i + 1)
-
         # Draw x t from p(x).
-        # X_t = sample_random_column_from_matrix(X)
-        X_t = sample_columns(X, samples)
+        X_t, selectedIndices = sample_columns(X, samples)
 
         # Define the optimization variables
         currAlpha = cp.Variable((k, samples))
@@ -132,22 +106,20 @@ def func(samples, num_iterations):
 
         # Retrieve the optimized alpha
         optimized_alpha = currAlpha.value
+        totalAlpha[:, selectedIndices] = optimized_alpha
 
 
         A += (1/2) * np.matmul(optimized_alpha, optimized_alpha.T)
         B += np.matmul(X_t, optimized_alpha.T)
 
-        D = update_dictionary(A, B, D, k)
-
-        # get the optimal objective value
-    
+        D = update_dictionary(A, B, D, k)    
         
         objective_values.append(objective.value / (i + 1))
+        # objective_values.append( (1 / (i + 1)) * np.linalg.norm(X - np.matmul(D, totalAlpha), 2) ** 2 + lambda_value * np.linalg(currAlpha, 1) )
+
 
         x_hat = np.around(np.matmul(D, optimized_alpha), decimals=1)
         # plotDifferenceMatrix(X, x_hat, f"Matrix_Reconstruction_Difference_(Iteration{i + 1}, with K = {k})")
-        # print(x_hat)
-        # print(D)
     return objective_values
 
 plt.close("all")
