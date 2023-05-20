@@ -29,7 +29,7 @@ def plotDifferenceMatrix(matrix1, matrix2, fileSaveName = "absolute_difference_m
 
 
 # Defining the seed
-np.random.seed(0)
+np.random.seed(1)
 
 # Defining the parameters
 lambda_value = 0.1
@@ -59,17 +59,10 @@ def sample_columns(matrix, num_samples = 6):
     sampled_matrix = matrix[:, sample_indices]
     return sampled_matrix, sample_indices
 
+def running_average(new_value, previous_average, n):
+    return (previous_average * n + new_value) / (n + 1)
 
 def func(samples, num_iterations):
-    # Defining the data set
-    # Dimensions: m x n
-    X = np.random.randn(m, n)
-
-    # Dimensions: m x k
-    # D = np.random.randn(m, k)
-    # D /= np.linalg.norm(D, axis=0)
-
-    # create an identity matrix
     D = X[:, 0 : k]
     D /= np.linalg.norm(D, axis=0)
 
@@ -79,6 +72,8 @@ def func(samples, num_iterations):
     # B = np.random.randn(m, k)
     objective_values = []
     totalAlpha = np.zeros((k, n))
+
+    accumulatedObjective = 10
 
 
     for i in tqdm(range(num_iterations)):
@@ -114,19 +109,17 @@ def func(samples, num_iterations):
 
         D = update_dictionary(A, B, D, k)    
         
-        objective_values.append(objective.value / (i + 1))
+        accumulatedObjective = running_average(optimalValue, accumulatedObjective, i + 1)
+        objective_values.append(accumulatedObjective)
         # objective_values.append( (1 / (i + 1)) * np.linalg.norm(X - np.matmul(D, totalAlpha), 2) ** 2 + lambda_value * np.linalg(currAlpha, 1) )
 
-
-        x_hat = np.around(np.matmul(D, optimized_alpha), decimals=1)
+        # x_hat = np.around(np.matmul(D, optimized_alpha), decimals=1)
         # plotDifferenceMatrix(X, x_hat, f"Matrix_Reconstruction_Difference_(Iteration{i + 1}, with K = {k})")
     return objective_values
 
-plt.close("all")
-# Create new figure
-plt.figure()
-#  Plot the objective function with time
 
+plt.close("all")
+plt.figure()
 
 # labels = ['ahmed', 'hamada', 'deghedy']
 patchSizes = [1, 4, 10]
