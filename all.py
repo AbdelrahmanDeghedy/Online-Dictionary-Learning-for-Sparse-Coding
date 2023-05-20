@@ -148,7 +148,7 @@ def func(samples, num_iterations):
         # plotDifferenceMatrix(X, x_hat, f"Matrix_Reconstruction_Difference_(Iteration{i + 1}, with K = {k})")
         # print(x_hat)
         # print(D)
-    return objective_values[1:]
+    return objective_values
 
 plt.close("all")
 # Create new figure
@@ -157,13 +157,14 @@ plt.figure()
 
 
 # labels = ['ahmed', 'hamada', 'deghedy']
-samples_arr = [1, 3, 6]
+patchSizes = [1, 4, 10]
+labels = ["Our Method", f"Batch n = {patchSizes[1]}", f"Batch n = {patchSizes[2]}"]
 times = [i for i in range(1, num_iterations + 1)]
 
 
-for i, samples in enumerate(samples_arr):
+for i, (label, samples) in enumerate(zip(labels, patchSizes)):
     objective_values = func(samples, num_iterations)
-    plt.plot(times[1:], objective_values, label=samples)
+    plt.plot(times, objective_values, label=label)
 
 plt.xlabel('Time')
 plt.ylabel('Objective function')
