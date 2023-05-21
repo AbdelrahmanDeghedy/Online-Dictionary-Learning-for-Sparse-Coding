@@ -62,14 +62,14 @@ def sample_columns(matrix, num_samples = 6):
 def running_average(new_value, previous_average, n):
     return (previous_average * n + new_value) / (n + 1)
 
-def func(samples, num_iterations):
+def learn(samples, num_iterations):
     D = X[:, 0 : k]
     D /= np.linalg.norm(D, axis=0)
 
     A = np.eye(k, k)
     # Zero matrix of size k x k
     B = np.zeros((m, k))
-    # B = np.random.randn(m, k)
+
     objective_values = []
     totalAlpha = np.zeros((k, n))
 
@@ -88,10 +88,10 @@ def func(samples, num_iterations):
 
         constraints = []
         # Columns of D are normalized
-        for j in range(k):
-            constraints += [
-                cp.norm(D[:, j]) <= 1,
-            ]
+        # for j in range(k):
+        #     constraints += [
+        #         cp.norm(D[:, j]) == 1,
+        #     ]
 
         # Define the problem
         problem = cp.Problem(objective, constraints)
@@ -104,14 +104,13 @@ def func(samples, num_iterations):
         totalAlpha[:, selectedIndices] = optimized_alpha
 
 
-        A += (1/2) * np.matmul(optimized_alpha, optimized_alpha.T)
-        B += np.matmul(X_t, optimized_alpha.T)
+        A += (1/2) * (np.matmul(optimized_alpha, optimized_alpha.T) / samples)
+        B += np.matmul(X_t, optimized_alpha.T) / samples
 
         D = update_dictionary(A, B, D, k)    
         
         accumulatedObjective = running_average(optimalValue, accumulatedObjective, i + 1)
         objective_values.append(accumulatedObjective)
-        # objective_values.append( (1 / (i + 1)) * np.linalg.norm(X - np.matmul(D, totalAlpha), 2) ** 2 + lambda_value * np.linalg(currAlpha, 1) )
 
         # x_hat = np.around(np.matmul(D, optimized_alpha), decimals=1)
         # plotDifferenceMatrix(X, x_hat, f"Matrix_Reconstruction_Difference_(Iteration{i + 1}, with K = {k})")
@@ -128,7 +127,7 @@ times = [i for i in range(1, num_iterations + 1)]
 
 
 for i, (label, samples) in enumerate(zip(labels, patchSizes)):
-    objective_values = func(samples, num_iterations)
+    objective_values = learn(samples, num_iterations)
     plt.plot(times, objective_values, label=label)
 
 plt.xlabel('Time')
