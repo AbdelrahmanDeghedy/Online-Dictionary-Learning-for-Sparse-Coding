@@ -66,9 +66,11 @@ def learn(samples, num_iterations):
     D = X[:, 0 : k]
     D /= np.linalg.norm(D, axis=0)
 
-    A = np.eye(k, k)
-    # Zero matrix of size k x k
-    B = np.zeros((m, k))
+    t0 = 0.1
+
+    # 3.4.4 Slowing Down The First Iterations Initializations
+    A = t0 * np.eye(k, k)
+    B = t0 * D
 
     objective_values = []
     totalAlpha = np.zeros((k, n))
