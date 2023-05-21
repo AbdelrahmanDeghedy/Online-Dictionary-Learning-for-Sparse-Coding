@@ -38,7 +38,7 @@ num_iterations = 100
 # Defining the dimensions
 m = 10
 n = 100
-k = 50
+k = 40
 
 # Dimensions: m x n
 X = np.random.randn(m, n)
@@ -86,15 +86,8 @@ def learn(samples, num_iterations):
         # Define the objective function
         objective = cp.Minimize((1 / 2) * cp.sum_squares(X_t - np.matmul(D, currAlpha)) + lambda_value * cp.norm(currAlpha, 1))
 
-        constraints = []
-        # Columns of D are normalized
-        # for j in range(k):
-        #     constraints += [
-        #         cp.norm(D[:, j]) == 1,
-        #     ]
-
         # Define the problem
-        problem = cp.Problem(objective, constraints)
+        problem = cp.Problem(objective)
 
         # Solve the problem
         optimalValue = problem.solve()
@@ -112,19 +105,18 @@ def learn(samples, num_iterations):
         accumulatedObjective = running_average(optimalValue, accumulatedObjective, i + 1)
         objective_values.append(accumulatedObjective)
 
-        # x_hat = np.around(np.matmul(D, optimized_alpha), decimals=1)
+        x_hat = np.around(np.matmul(D, optimized_alpha), decimals=1)
         # plotDifferenceMatrix(X, x_hat, f"Matrix_Reconstruction_Difference_(Iteration{i + 1}, with K = {k})")
+
     return objective_values
 
 
 plt.close("all")
 plt.figure()
 
-# labels = ['ahmed', 'hamada', 'deghedy']
 patchSizes = [1, 4, 10]
 labels = ["Our Method", f"Batch n = {patchSizes[1]}", f"Batch n = {patchSizes[2]}"]
 times = [i for i in range(1, num_iterations + 1)]
-
 
 for i, (label, samples) in enumerate(zip(labels, patchSizes)):
     objective_values = learn(samples, num_iterations)
