@@ -12,12 +12,12 @@ np.random.seed(1)
 
 # Defining the parameters
 lambda_value = 0.1
-num_iterations = 100
+num_iterations = 5
 
 # Defining the dimensions
 m = 10
 n = 100
-k = 40
+k = 100
 
 # Dimensions: m x n
 X = np.random.randn(m, n)
@@ -85,7 +85,7 @@ times = [i for i in range(1, num_iterations + 1)]
 
 # Learning and Plotting the Objective Function VS Time
 for i, (label, samples) in enumerate(zip(labels, patchSizes)):
-    objective_values = learn(samples, num_iterations)
+    objective_values = learn(samples, num_iterations, plotMatrixDifference = True)
     plt.plot(times, objective_values, label=label)
 
 # Showing the plot
