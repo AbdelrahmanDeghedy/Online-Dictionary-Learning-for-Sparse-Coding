@@ -12,12 +12,12 @@ np.random.seed(1)
 
 # Defining the parameters
 lambda_value = 0.1
-num_iterations = 5
+num_iterations = 100
 
 # Defining the dimensions
 m = 10
 n = 100
-k = 100
+k = 40
 
 # Dimensions: m x n
 X = np.random.randn(m, n)
@@ -54,8 +54,15 @@ def learn(samples, num_iterations, plotMatrixDifference = False):
         # Define the objective function
         objective = cp.Minimize((1 / 2) * cp.sum_squares(X_t - np.matmul(D, currAlpha)) + lambda_value * cp.norm(currAlpha, 1))
 
+
+        constraints = []
+        for j in range(k):
+            constraints += [
+                cp.norm(D[:, j]) <= 1,
+            ]
+
         # Define the problem
-        problem = cp.Problem(objective)
+        problem = cp.Problem(objective, constraints)
 
         # Solve the problem
         optimalObjectiveValue = problem.solve()
@@ -63,7 +70,7 @@ def learn(samples, num_iterations, plotMatrixDifference = False):
         # Retrieve the optimized alpha
         optimized_alpha = currAlpha.value
 
-        A += (1/2) * (np.matmul(optimized_alpha, optimized_alpha.T) / samples)
+        A += (1/2) * (np.dot(optimized_alpha, optimized_alpha.T) / samples)
         B += np.matmul(X_t, optimized_alpha.T) / samples
 
         D = update_dictionary(A, B, D, k)    
@@ -75,6 +82,7 @@ def learn(samples, num_iterations, plotMatrixDifference = False):
             x_hat = np.around(np.matmul(D, optimized_alpha), decimals=1)
             plotDifferenceMatrix(X, x_hat, f"Matrix_Reconstruction_Difference_(Iteration{i + 1}, with K = {k})")
 
+        print(optimized_alpha)
     return objective_values
 
 
@@ -85,7 +93,7 @@ times = [i for i in range(1, num_iterations + 1)]
 
 # Learning and Plotting the Objective Function VS Time
 for i, (label, samples) in enumerate(zip(labels, patchSizes)):
-    objective_values = learn(samples, num_iterations, plotMatrixDifference = True)
+    objective_values = learn(samples, num_iterations, plotMatrixDifference = False)
     plt.plot(times, objective_values, label=label)
 
 # Showing the plot
