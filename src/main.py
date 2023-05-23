@@ -1,7 +1,7 @@
 import cvxpy as cp
 import numpy as np
 import matplotlib.pyplot as plt
-from utils.utils import plotDifferenceMatrix, running_average, sample_columns
+from utils.utils import plotMatrixHeatMap, running_average, sample_columns
 # Provides a progress bar
 from tqdm import tqdm
 
@@ -23,6 +23,19 @@ k = 40
 X = np.random.randn(m, n)
 
 
+def initializeD (m, k) :
+    # Generate a random matrix
+    random_matrix = np.random.rand(m, k)
+
+    # Replace some elements in each column with zeros
+    zero_indices = np.random.choice(k, size=int(k/2), replace=False)
+    random_matrix[:, zero_indices] = 0
+
+    # Normalize the columns
+    D_init = random_matrix / max([1, np.linalg.norm(random_matrix)])
+
+    return D_init 
+
 def update_dictionary(a, b, dictionary, dict_cols):
     # For each column of the dictionary
     for j in range(dict_cols) :
@@ -37,8 +50,12 @@ def learn(samples, num_iterations, plotMatrixDifference = False):
     # Initialize the accumulated objective function
     accumulatedObjective = 6
     
-    D = X[:, 0 : k]
-    D /= np.linalg.norm(D, axis=0)
+    # D = np.eye(m, k)
+    # D = np.random.randint(2, size=(m, k))
+    D = initializeD(m, k)
+    # D /= np.linalg.norm(D, axis=0)
+    print(D)
+    # D = X[:, 0 : k]
 
     # From section 3.4.4 Slowing Down The First Iterations Initializations
     A = t0 * np.eye(k, k)
@@ -58,7 +75,7 @@ def learn(samples, num_iterations, plotMatrixDifference = False):
         constraints = []
         for j in range(k):
             constraints += [
-                cp.norm(D[:, j]) <= 1,
+                cp.norm(D[:, j], 2) <= 1,
             ]
 
         # Define the problem
@@ -80,9 +97,10 @@ def learn(samples, num_iterations, plotMatrixDifference = False):
 
         if plotMatrixDifference and samples == 1:
             x_hat = np.around(np.matmul(D, optimized_alpha), decimals=1)
-            plotDifferenceMatrix(X, x_hat, f"Matrix_Reconstruction_Difference_(Iteration{i + 1}, with K = {k})")
+            diff_matrix = np.abs(X - x_hat)
+            plotMatrixHeatMap(diff_matrix, f"Matrix_Reconstruction_Difference_(Iteration{i + 1}, with K = {k})")
 
-        print(optimized_alpha)
+        plotMatrixHeatMap(D, f"Alpha_(Iteration{i + 1}, with K = {k})")
     return objective_values
 
 
@@ -91,10 +109,16 @@ patchSizes = [1, 4, 10]
 labels = ["Our Method", f"Batch n = {patchSizes[1]}", f"Batch n = {patchSizes[2]}"]
 times = [i for i in range(1, num_iterations + 1)]
 
+# List of lists for all objective values in different patch sizes
+
+objective_values = []
+
 # Learning and Plotting the Objective Function VS Time
-for i, (label, samples) in enumerate(zip(labels, patchSizes)):
-    objective_values = learn(samples, num_iterations, plotMatrixDifference = False)
-    plt.plot(times, objective_values, label=label)
+for i, samples in enumerate(patchSizes):
+    objective_values.append(learn(samples, num_iterations, plotMatrixDifference = False))
+
+for i, currObjValues in enumerate(objective_values):
+    plt.plot(times, currObjValues, label=labels[i])
 
 # Showing the plot
 plt.xlabel('Time')
