@@ -24,6 +24,8 @@ X = np.random.randn(m, n)
 
 
 def initializeD (m, k) :
+    # random_matrix = X[:, np.random.choice(n, k, replace=False)]
+
     # Generate a random matrix
     random_matrix = np.random.rand(m, k)
 
@@ -36,12 +38,12 @@ def initializeD (m, k) :
 
     return D_init 
 
-def update_dictionary(a, b, dictionary, dict_cols):
+def update_dictionary(A, B, dictionary, dict_cols):
     # For each column of the dictionary
     for j in range(dict_cols) :
-        u_j = dictionary[:, j] + (b[:, j] - np.matmul(dictionary, a[:, j])) / a[j, j]
+        u_j = dictionary[:, j] + (B[:, j] - np.matmul(dictionary, A[:, j])) / A[j, j]
         dictionary[:, j] = u_j / max([1, np.linalg.norm(u_j)])
-
+    
     return dictionary
 
 def learn(samples, num_iterations, plotMatrixDifference = False):
@@ -50,12 +52,8 @@ def learn(samples, num_iterations, plotMatrixDifference = False):
     # Initialize the accumulated objective function
     accumulatedObjective = 6
     
-    # D = np.eye(m, k)
-    # D = np.random.randint(2, size=(m, k))
     D = initializeD(m, k)
-    # D /= np.linalg.norm(D, axis=0)
     print(D)
-    # D = X[:, 0 : k]
 
     # From section 3.4.4 Slowing Down The First Iterations Initializations
     A = t0 * np.eye(k, k)
@@ -100,7 +98,12 @@ def learn(samples, num_iterations, plotMatrixDifference = False):
             diff_matrix = np.abs(X - x_hat)
             plotMatrixHeatMap(diff_matrix, f"Matrix_Reconstruction_Difference_(Iteration{i + 1}, with K = {k})")
 
-        plotMatrixHeatMap(D, f"Alpha_(Iteration{i + 1}, with K = {k})")
+        if samples == 1 and i == num_iterations - 1:
+            plotMatrixHeatMap(D, f"Dictionary_(Iteration{i + 1}, with K = {k}), with D initialized randomly")
+        
+        if samples == 1 and i == num_iterations - 1:
+            plotMatrixHeatMap(optimized_alpha.T, f"Alpha_(Iteration{i + 1}, with K = {k})")
+        
     return objective_values
 
 
@@ -121,7 +124,10 @@ for i, currObjValues in enumerate(objective_values):
     plt.plot(times, currObjValues, label=labels[i])
 
 # Showing the plot
+title = 'Objective function vs. time, using randomized initialization for D'
+plt.title(title)
 plt.xlabel('Time')
 plt.ylabel('Objective function')
 plt.legend()
 plt.show()
+plt.savefig(f'../results/{"_".join(title.split())}.png', bbox_inches='tight')

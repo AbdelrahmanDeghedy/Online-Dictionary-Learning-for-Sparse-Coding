@@ -7,7 +7,7 @@ def plotMatrixHeatMap(matrix, fileSaveName = "absolute_difference_matrix"):
     # Plot the absolute difference matrix as a heatmap
     # Define the values range for the colorbar
     # othervalues for cmap are 'hot', 'jet', 'gray', 'viridis', 'magma', 'inferno', 'plasma'
-    plt.imshow(matrix, cmap='hot', vmin=0, vmax=1)
+    plt.imshow(matrix, cmap='inferno', vmin=0, vmax=1)
 
     # plt.imshow(diff_matrix, cmap='hot')
     plt.title(fileSaveName)
@@ -18,7 +18,7 @@ def plotMatrixHeatMap(matrix, fileSaveName = "absolute_difference_matrix"):
     plt.yticks([])
 
     # Save the plot as a PNG image
-    plt.savefig(f'../results/{fileSaveName}.png', bbox_inches='tight')
+    plt.savefig(f'../results/{"_".join(fileSaveName.split())}.png', bbox_inches='tight')
     # other values inside ply.close() are 'all', 'image', 'num', 'auto'
     plt.close("all")
 
