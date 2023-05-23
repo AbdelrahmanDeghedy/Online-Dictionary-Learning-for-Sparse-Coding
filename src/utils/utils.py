@@ -1,16 +1,13 @@
 import matplotlib.pyplot as plt
 import numpy as np
 
-def plotDifferenceMatrix(matrix1, matrix2, fileSaveName = "absolute_difference_matrix"):
-    # Compute the absolute difference matrix
-    diff_matrix = np.abs(matrix2 - matrix1)
-
+def plotMatrixHeatMap(matrix, fileSaveName = "absolute_difference_matrix"):
     plt.figure(figsize=(10, 10))
 
     # Plot the absolute difference matrix as a heatmap
     # Define the values range for the colorbar
     # othervalues for cmap are 'hot', 'jet', 'gray', 'viridis', 'magma', 'inferno', 'plasma'
-    plt.imshow(diff_matrix, cmap='hot', vmin=0, vmax=1)
+    plt.imshow(matrix, cmap='hot', vmin=0, vmax=1)
 
     # plt.imshow(diff_matrix, cmap='hot')
     plt.title(fileSaveName)
@@ -22,6 +19,7 @@ def plotDifferenceMatrix(matrix1, matrix2, fileSaveName = "absolute_difference_m
 
     # Save the plot as a PNG image
     plt.savefig(f'../results/{fileSaveName}.png', bbox_inches='tight')
+    # other values inside ply.close() are 'all', 'image', 'num', 'auto'
     plt.close("all")
 
 def running_average(new_value, previous_average, n):
