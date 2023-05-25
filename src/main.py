@@ -17,7 +17,7 @@ num_iterations = 100
 # Defining the dimensions
 m = 10
 n = 100
-k = 40
+k = 20
 
 # Dimensions: m x n
 X = np.random.randn(m, n)
@@ -26,7 +26,7 @@ X = np.random.randn(m, n)
 def initializeD (m, k) :
     # random_matrix = X[:, np.random.choice(n, k, replace=False)]
 
-    # Generate a random matrix
+    # # Generate a random matrix
     random_matrix = np.random.rand(m, k)
 
     # Replace some elements in each column with zeros
@@ -53,7 +53,7 @@ def learn(samples, num_iterations, plotMatrixDifference = False):
     accumulatedObjective = 6
     
     D = initializeD(m, k)
-    print(D)
+    # print(D)
 
     # From section 3.4.4 Slowing Down The First Iterations Initializations
     A = t0 * np.eye(k, k)
@@ -93,14 +93,17 @@ def learn(samples, num_iterations, plotMatrixDifference = False):
         accumulatedObjective = running_average(optimalObjectiveValue, accumulatedObjective, i + 1)
         objective_values.append(accumulatedObjective)
 
-        if plotMatrixDifference and samples == 1:
+        if (i == 0 or i == num_iterations - 1) and plotMatrixDifference and samples == 1:
             x_hat = np.around(np.matmul(D, optimized_alpha), decimals=1)
             diff_matrix = np.abs(X - x_hat)
             plotMatrixHeatMap(diff_matrix, f"Matrix_Reconstruction_Difference_(Iteration{i + 1}, with K = {k})")
 
         if samples == 1 and i == num_iterations - 1:
+            x_hat = np.around(np.matmul(D, optimized_alpha), decimals=1)
+            plotMatrixHeatMap(x_hat, f"Matrix_Reconstruction_(Iteration{i + 1}, with K = {k})")
             plotMatrixHeatMap(D, f"Dictionary_(Iteration{i + 1}, with K = {k}), with D initialized randomly")
-        
+            plotMatrixHeatMap(optimized_alpha.T, f"Alpha_(Iteration{i + 1}, with K = {k})")
+
         if samples == 1 and i == num_iterations - 1:
             plotMatrixHeatMap(optimized_alpha.T, f"Alpha_(Iteration{i + 1}, with K = {k})")
         
@@ -118,16 +121,16 @@ objective_values = []
 
 # Learning and Plotting the Objective Function VS Time
 for i, samples in enumerate(patchSizes):
-    objective_values.append(learn(samples, num_iterations, plotMatrixDifference = False))
+    objective_values.append(learn(samples, num_iterations, plotMatrixDifference = True))
 
 for i, currObjValues in enumerate(objective_values):
     plt.plot(times, currObjValues, label=labels[i])
 
 # Showing the plot
-title = 'Objective function vs. time, using randomized initialization for D'
+title = 'Objective function vs. time, using random columns of the dataset as initialization for D'
 plt.title(title)
 plt.xlabel('Time')
 plt.ylabel('Objective function')
 plt.legend()
-plt.show()
 plt.savefig(f'../results/{"_".join(title.split())}.png', bbox_inches='tight')
+plt.show()

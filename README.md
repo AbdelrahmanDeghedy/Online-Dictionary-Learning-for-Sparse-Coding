@@ -14,9 +14,11 @@ Julien Mairal's paper presents novel online learning algorithms that tackle the 
 
 - We used 100 iterations on this example.
 
-![](./results/objectiveTime.png)
+![](./results/Objective_function_vs._time%2C_using_random_columns_of_the_dataset_as_initialization_for_D.png)
 
-### 2. Plotting the Difference Matrix _(between the original dataset X, and reconstructed dataset x_hat)_
+### 2. Effect of Increasing the Dictionary Size on the Reconstructed Signal
+
+We study the effect of varying _K_ (number of columns in the dictionary), by plotting the Difference Matrix _(between the original dataset X, and reconstructed dataset x_hat)_
 
 - This heat map illustrates the absolute difference between the original dataset values, and the entries of the reconstructed matrix.
 - The darker the color, the more closer the reconstructed entries to the original ones.
@@ -26,50 +28,68 @@ Julien Mairal's paper presents novel online learning algorithms that tackle the 
 
 1. First Iteration
 
-![](<./results/Matrix_Reconstruction_Difference_(Iteration1%2C%20with%20K%20%3D%2020).png>)
+![](<./img/Matrix_Reconstruction_Difference_(Iteration1%2C%20with%20K%20%3D%2020).png>)
 
 2. Final (Fifth) Iteration
 
-![](<./results/Matrix_Reconstruction_Difference_(Iteration5%2C%20with%20K%20%3D%2020).png>)
+![](<./img/Matrix_Reconstruction_Difference_(Iteration5%2C%20with%20K%20%3D%2020).png>)
 
 ### K = 40
 
 1. First Iteration
 
-![](<./results/Matrix_Reconstruction_Difference_(Iteration1%2C%20with%20K%20%3D%2040).png>)
+![](<./img/Matrix_Reconstruction_Difference_(Iteration1%2C%20with%20K%20%3D%2040).png>)
 
 2. Final (Fifth) Iteration
 
-![](<./results/Matrix_Reconstruction_Difference_(Iteration5%2C%20with%20K%20%3D%2040).png>)
+![](<./img/Matrix_Reconstruction_Difference_(Iteration5%2C%20with%20K%20%3D%2040).png>)
 
 ### K = 60
 
 1. First Iteration
 
-![](<./results/Matrix_Reconstruction_Difference_(Iteration1%2C%20with%20K%20%3D%2060).png>)
+![](<./img/Matrix_Reconstruction_Difference_(Iteration1%2C%20with%20K%20%3D%2060).png>)
 
 2. Final (Fifth) Iteration
 
-![](<./results/Matrix_Reconstruction_Difference_(Iteration5%2C%20with%20K%20%3D%2060).png>)
+![](<./img/Matrix_Reconstruction_Difference_(Iteration5%2C%20with%20K%20%3D%2060).png>)
 
 ### K = 80
 
 1. First Iteration
 
-![](<./results/Matrix_Reconstruction_Difference_(Iteration1%2C%20with%20K%20%3D%2080).png>)
+![](<./img/Matrix_Reconstruction_Difference_(Iteration1%2C%20with%20K%20%3D%2080).png>)
 
 2. Final (Fifth) Iteration
 
-![](<./results/Matrix_Reconstruction_Difference_(Iteration5%2C%20with%20K%20%3D%2080).png>)
+![](<./img/Matrix_Reconstruction_Difference_(Iteration5%2C%20with%20K%20%3D%2080).png>)
 
 ### K = 100
 
 1. First Iteration
 
-![](<./results/Matrix_Reconstruction_Difference_(Iteration1%2C%20with%20K%20%3D%20100).png>)
+![](<./img/Matrix_Reconstruction_Difference_(Iteration1%2C%20with%20K%20%3D%20100).png>)
 
 2. Final (Fifth) Iteration
 
-![](<./results/Matrix_Reconstruction_Difference_(Iteration5%2C%20with%20K%20%3D%20100).png>)
+![](<./img/Matrix_Reconstruction_Difference_(Iteration5%2C%20with%20K%20%3D%20100).png>)
 
-> **Conclusion**: The larger the value of K _(hence the larger the dictionary)_, the larger the faster the convergence of the reconstructed signal to the original.
+> **Conclusion**: The larger the value of K _(hence the larger the dictionary)_, the faster the convergence of the reconstructed signal to the original one.
+
+### 3. Sparsity
+
+The following two heat maps illustrates the values of both the dictionary $D$ and one of the the sparse coding coefficients columns $\alpha$. It is evident the sparsity in each of them.
+
+![](<./img/Dictionary_(Iteration100%2C_with_K_%3D_40)%2C_with_D_initialized_randomly.png>)
+
+![](<./img/Alpha_(Iteration100%2C%20with%20K%20%3D%2040).png>)
+
+## Contribution
+
+Thank you for your interest in contributing to this research paper code repository! Your contributions can greatly enhance the quality and impact of the project. To contribute, please follow the guidelines outlined below.
+Bug Reports and Issues
+
+If you encounter any bugs, have questions, or want to report an issue related to the code in this repository, please create a new issue on the GitHub repository page. When creating an issue, provide a clear and concise description of the problem you encountered, along with steps to reproduce it if applicable. This will help us understand and address the issue promptly.
+Feature Requests
+
+If you have a feature request or an idea for improving the code, please submit a new issue on the GitHub repository. Clearly describe the proposed feature or enhancement, providing as much detail as possible. We appreciate well-documented feature requests that include the rationale behind the suggestion and any potential implementation approaches.

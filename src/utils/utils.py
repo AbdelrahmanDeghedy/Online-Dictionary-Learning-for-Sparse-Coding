@@ -11,7 +11,7 @@ def plotMatrixHeatMap(matrix, fileSaveName = "absolute_difference_matrix"):
 
     # plt.imshow(diff_matrix, cmap='hot')
     plt.title(fileSaveName)
-    plt.colorbar(label='Absolute Difference')
+    plt.colorbar(label='Values')
 
     # Hide axis ticks and labels
     plt.xticks([])
