@@ -86,7 +86,7 @@ The following two heat maps illustrates the values of both the dictionary $D$ an
 
 ## Slides
 
-A slides for our presentation about this paper as a project for the **Optimization EEC 494** class, is available [here](./Slides/Online%20Dictionary%20Learning%20for%20Sparse%20Coding%20Slides.pdf)
+The slides for our presentation about this paper, as a project for the **Optimization EEC 494** class, are available [here](./Slides/Online%20Dictionary%20Learning%20for%20Sparse%20Coding%20Slides.pdf)
 
 ## Thanks
 
