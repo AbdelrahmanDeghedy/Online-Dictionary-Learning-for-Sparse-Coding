@@ -90,7 +90,7 @@ A slides for our presentation about this paper as a project for the **Optimizati
 
 ## Thanks
 
-Special thanks to my amazing teammates that contributed to this project:
+Special thanks to the amazing people that contributed to this project:
 
 1. Pensee Safwat
 2. Dyaa Mohamed
