@@ -4,7 +4,7 @@
 
 This repository contains the implementation of the online learning algorithms for sparse coding proposed by Julien Mairal in his paper titled _"Online Learning for Matrix Factorization and Sparse Coding"_.
 
-Ssparse coding is a fundamental technique in machine learning and signal processing, with numerous applications in recommendation systems, image processing, and data analysis. While traditional approaches often rely on _batch learning_ algorithms, _online learning_ methods provide a more efficient and scalable solution, enabling _real-time_ updates and adaptivity to changing data streams.
+Sparse coding is a fundamental technique in machine learning and signal processing, with numerous applications in recommendation systems, image processing, and data analysis. While traditional approaches often rely on _batch learning_ algorithms, _online learning_ methods provide a more efficient and scalable solution, enabling _real-time_ updates and adaptivity to changing data streams.
 
 Julien Mairal's paper presents novel online learning algorithms that tackle the challenges of matrix factorization and sparse coding in an online setting. These algorithms not only provide accurate representations of high-dimensional data but also incorporate efficient online updates, making them suitable for large-scale applications.
 
