@@ -84,6 +84,20 @@ The following two heat maps illustrates the values of both the dictionary $D$ an
 
 ![](<./img/Alpha_(Iteration100%2C%20with%20K%20%3D%2040).png>)
 
+## Slides
+
+A slides for our presentation about this paper as a project for the **Optimization EEC 494** class, is available [here](./Slides/Online%20Dictionary%20Learning%20for%20Sparse%20Coding%20Slides.pdf)
+
+## Thanks
+
+Special thanks to my amazing teammates that contributed to this project:
+
+1. Pensee Safwat
+2. Dyaa Mohamed
+3. Abdelrahman Ali
+4. Fatma Ezzat
+5. Me :)
+
 ## Contribution
 
 Thank you for your interest in contributing to this research paper code repository! Your contributions can greatly enhance the quality and impact of the project. To contribute, please follow the guidelines outlined below.
